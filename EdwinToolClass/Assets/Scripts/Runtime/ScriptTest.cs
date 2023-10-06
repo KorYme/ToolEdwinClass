@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ScriptTest : MonoBehaviour
 {
-    [SerializeField] SpriteRenderer _spriteR;
+    [SerializeField] SpriteRenderer _spriteRenderer;
 
     public string text = "";
 }
