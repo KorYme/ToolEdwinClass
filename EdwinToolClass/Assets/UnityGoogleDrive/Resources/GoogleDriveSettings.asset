@@ -19,7 +19,9 @@ MonoBehaviour:
     token_uri: https://oauth2.googleapis.com/token
     auth_provider_x509_cert_url: https://www.googleapis.com/oauth2/v1/certs
     client_secret: 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
-    redirect_uris: []
+    redirect_uris:
+    - http://localhost
+    - https://drive.google.com
   uriSchemeClientCredentials:
     clientId: 584665715819-of5n91otmit24coe9vnohdhafa4pkiqh.apps.googleusercontent.com
     reversedClientId: 

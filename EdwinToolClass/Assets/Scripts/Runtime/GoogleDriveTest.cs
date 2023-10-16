@@ -1,49 +1,48 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityGoogleDrive;
 
 public class GoogleDriveTest : MonoBehaviour
 {
-    public IEnumerator FileUpload()
-    {
-        byte[] content = new byte[1024]; // Aller chercher l'objet au bon endroit et le lire
-        UnityGoogleDrive.Data.File file = new() { Name = "TestUpload", Content = content };
-        GoogleDriveFiles.CreateRequest request = GoogleDriveFiles.Create(file);
-        yield return request.Send();
-        print(request.IsError);
-        print(request.ResponseData.Content);
-        print(request.ResponseData.Id);
-    }
+    GoogleDriveFiles.ListRequest request;
+    string result = string.Empty;
+    string idResult = string.Empty;
+    Coroutine _searchCoroutine = null;
 
-    public IEnumerator FileDownload()
-    {
-        GoogleDriveFiles.DownloadRequest request = GoogleDriveFiles.Download("");
-        yield return request.Send();
-        print(request.ResponseData.Name);
-    }
-
-    // IMPORTED
-    private GoogleDriveFiles.ListRequest request;
-    public string filePath = string.Empty;
-    private string result = string.Empty;
-    private string idResult = string.Empty;
+    public string googleDriveFilePath = string.Empty;
+    public string fileName = string.Empty;
     public WriterTest writer;
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            StartCoroutine(Test());
-        }
-    }
+    const string GOOGLE_DRIVE_FOLDER = "1A6fu8iMUg3yF1vM0rJ04KBgT-MefGeF0";
 
-    private IEnumerator Test()
+    public void TestDownload() => StartCoroutine(DownloadCoroutine());
+
+    IEnumerator DownloadCoroutine()
     {
-        yield return GetFileByPathRoutine(filePath);
+        yield return _searchCoroutine = StartCoroutine(GetFileByPathRoutine(googleDriveFilePath));
         print(result);
         GoogleDriveFiles.Download(idResult).Send().OnDone += file => writer.WriteFile(file.Content);
+    }
+
+    public void TestUpload()
+    {
+        var file = new UnityGoogleDrive.Data.File(){ Name = fileName, Content = writer.ReadFile(), Parents = new(){ GOOGLE_DRIVE_FOLDER } };
+        GoogleDriveFiles.Create(file).Send().OnDone += (x) => print("Send request was a success : " + x.Name);
+    }
+
+    public void DestroyOldFile()
+    {
+
+    }
+
+    public void Test()
+    {
+        GoogleDriveFiles.List().Send().OnDone += fileList => fileList.Files.ForEach(x => print(x.Name));
     }
 
     private IEnumerator GetFileByPathRoutine(string filePath)
@@ -95,10 +94,13 @@ public class GoogleDriveTest : MonoBehaviour
             yield break;
         }
 
-        if (request.ResponseData.Files.Count > 1)
-            Debug.LogWarning($"Multiple '{filePath}' files been found.");
+        //if (request.ResponseData.Files.Count > 1)
+        //{
+        //    Debug.LogWarning($"Multiple (X{request.ResponseData.Files.Count}) '{filePath}' files been found.");
+            
+        //}
 
-        var file = request.ResponseData.Files[0];
+        var file = request.ResponseData.Files[^1];
 
         result = $"ID: {file.Id}; Size: {file.Size * .001f:0.00}KB;";
         idResult = file.Id;

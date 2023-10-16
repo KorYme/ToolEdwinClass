@@ -9,10 +9,12 @@ using UnityEngine;
 public class ScriptTestEditor : Editor
 {
     ScriptTest _myObject = null;
+    SerializedProperty m_googleDriveProperty;
 
     private void OnEnable()
     {
         _myObject = (ScriptTest)target;
+        m_googleDriveProperty = serializedObject.FindProperty("GoogleDriveScript");
     }
 
     public override void OnInspectorGUI()
@@ -21,9 +23,22 @@ public class ScriptTestEditor : Editor
         EditorGUILayout.LabelField("My label");
         EditorGUILayout.EndHorizontal();
         _myObject.text = EditorGUILayout.TextField("Text Area", _myObject.text);
-        if (GUILayout.Button("Press this button"))
+        EditorGUILayout.PropertyField(m_googleDriveProperty, new GUIContent("GoogleDriveScript"));
+        if (GUILayout.Button("Download"))
         {
-            Debug.Log(_myObject.text);
+            GoogleDriveTest gd = m_googleDriveProperty.objectReferenceValue as GoogleDriveTest;
+            gd?.TestDownload();
         }
+        if (GUILayout.Button("Upload"))
+        {
+            GoogleDriveTest gd = m_googleDriveProperty.objectReferenceValue as GoogleDriveTest;
+            gd.TestUpload();
+        }
+        if (GUILayout.Button("Test"))
+        {
+            GoogleDriveTest gd = m_googleDriveProperty.objectReferenceValue as GoogleDriveTest;
+            gd?.Test();
+        }
+        serializedObject.ApplyModifiedProperties();
     }
 }

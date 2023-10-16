@@ -375,6 +375,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spriteRenderer: {fileID: 0}
+  GoogleDriveScript: {fileID: 1335634737}
   text: Let's Gay
 --- !u!4 &1335634735
 Transform:
@@ -455,7 +456,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97eee07982a9a774f85605eddf8ceb64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  filePath: Couch Game Project/Wwise data/Unity.jpg
+  googleDriveFilePath: Couch Game Project/Wwise data/Unity.jpg
+  fileName: Unity.jpg
   writer: {fileID: 1335634738}
 --- !u!114 &1335634738
 MonoBehaviour:
@@ -469,7 +471,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 782ba298b36326c42addae1302ede729, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FilePath: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
