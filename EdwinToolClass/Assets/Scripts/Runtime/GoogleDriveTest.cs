@@ -14,9 +14,8 @@ public class GoogleDriveTest : MonoBehaviour
     string idResult = string.Empty;
     Coroutine _searchCoroutine = null;
 
-    public string googleDriveFilePath = string.Empty;
-    public string fileName = string.Empty;
     public WriterTest writer;
+    public string googleDriveFilePath = string.Empty;
 
     const string GOOGLE_DRIVE_FOLDER = "1A6fu8iMUg3yF1vM0rJ04KBgT-MefGeF0";
 
@@ -31,18 +30,16 @@ public class GoogleDriveTest : MonoBehaviour
 
     public void TestUpload()
     {
-        var file = new UnityGoogleDrive.Data.File(){ Name = fileName, Content = writer.ReadFile(), Parents = new(){ GOOGLE_DRIVE_FOLDER } };
+        var file = new UnityGoogleDrive.Data.File(){ Name = Path.GetFileName(googleDriveFilePath), Content = writer.ReadFile(), Parents = new(){ GOOGLE_DRIVE_FOLDER } };
         GoogleDriveFiles.Create(file).Send().OnDone += (x) => print("Send request was a success : " + x.Name);
     }
 
-    public void DestroyOldFile()
+    public void DisplayAllFiles()
     {
+        //print("Displaying all files");
+        //GoogleDriveFiles.List().Send().OnDone += fileList => fileList.Files.ForEach(x => print(x.Name));
 
-    }
-
-    public void Test()
-    {
-        GoogleDriveFiles.List().Send().OnDone += fileList => fileList.Files.ForEach(x => print(x.Name));
+        writer.ReadFolder();
     }
 
     private IEnumerator GetFileByPathRoutine(string filePath)
@@ -53,9 +50,9 @@ public class GoogleDriveTest : MonoBehaviour
         // Thus, we need to traverse the entire hierarchy chain using List requests.
         // More info about the Google Drive folders: https://developers.google.com/drive/v3/web/folder.
 
+        yield return GoogleDriveFiles.EmptyTrash().Send();
         var fileName = filePath.Contains("/") ? GetAfter(filePath, "/") : filePath;
         var parentNames = filePath.Contains("/") ? GetBeforeLast(filePath, "/").Split('/') : null;
-
         // Resolving folder IDs one by one to find ID of the file's parent folder.
         var parentId = "root"; // 'root' is alias ID for the root folder in Google Drive.
         if (parentNames != null)
@@ -94,13 +91,13 @@ public class GoogleDriveTest : MonoBehaviour
             yield break;
         }
 
-        //if (request.ResponseData.Files.Count > 1)
-        //{
-        //    Debug.LogWarning($"Multiple (X{request.ResponseData.Files.Count}) '{filePath}' files been found.");
-            
-        //}
+        if (request.ResponseData.Files.Count > 1)
+        {
+            Debug.LogWarning($"multiple (x{request.ResponseData.Files.Count}) '{filePath}' files been found.");
 
-        var file = request.ResponseData.Files[^1];
+        }
+
+        var file = request.ResponseData.Files[0];
 
         result = $"ID: {file.Id}; Size: {file.Size * .001f:0.00}KB;";
         idResult = file.Id;

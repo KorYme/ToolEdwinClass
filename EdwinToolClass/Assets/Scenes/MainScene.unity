@@ -456,9 +456,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97eee07982a9a774f85605eddf8ceb64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  googleDriveFilePath: Couch Game Project/Wwise data/Unity.jpg
-  fileName: Unity.jpg
   writer: {fileID: 1335634738}
+  googleDriveFilePath: Couch Game Project/Wwise data/MainSoundBank.bnk
 --- !u!114 &1335634738
 MonoBehaviour:
   m_ObjectHideFlags: 0

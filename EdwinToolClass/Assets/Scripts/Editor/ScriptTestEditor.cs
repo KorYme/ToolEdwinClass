@@ -37,7 +37,7 @@ public class ScriptTestEditor : Editor
         if (GUILayout.Button("Test"))
         {
             GoogleDriveTest gd = m_googleDriveProperty.objectReferenceValue as GoogleDriveTest;
-            gd?.Test();
+            gd?.DisplayAllFiles();
         }
         serializedObject.ApplyModifiedProperties();
     }
