@@ -11,6 +11,8 @@ public class ScriptTestEditor : Editor
     ScriptTest _myObject = null;
     SerializedProperty m_googleDriveProperty;
 
+    bool _toggleForceButtons;
+
     private void OnEnable()
     {
         _myObject = (ScriptTest)target;
@@ -24,20 +26,26 @@ public class ScriptTestEditor : Editor
         EditorGUILayout.EndHorizontal();
         _myObject.text = EditorGUILayout.TextField("Text Area", _myObject.text);
         EditorGUILayout.PropertyField(m_googleDriveProperty, new GUIContent("GoogleDriveScript"));
+        GoogleDriveTest gd = m_googleDriveProperty.objectReferenceValue as GoogleDriveTest;
         if (GUILayout.Button("Download"))
         {
-            GoogleDriveTest gd = m_googleDriveProperty.objectReferenceValue as GoogleDriveTest;
-            gd?.TestDownload();
+            gd?.Download();
         }
         if (GUILayout.Button("Upload"))
         {
-            GoogleDriveTest gd = m_googleDriveProperty.objectReferenceValue as GoogleDriveTest;
-            gd.TestUpload();
+            gd?.Upload();
         }
-        if (GUILayout.Button("Test"))
-        {
-            GoogleDriveTest gd = m_googleDriveProperty.objectReferenceValue as GoogleDriveTest;
-            gd?.DisplayAllFiles();
+        _toggleForceButtons = EditorGUILayout.Foldout(_toggleForceButtons, "Force procedures");
+        if (_toggleForceButtons)
+        {            
+            if (GUILayout.Button("Force Download"))
+            {
+                gd?.ForceDownload();
+            }
+            if (GUILayout.Button("Force Upload"))
+            {
+                gd?.ForceUpload();
+            }
         }
         serializedObject.ApplyModifiedProperties();
     }

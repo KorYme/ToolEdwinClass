@@ -2,125 +2,93 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityGoogleDrive;
 
 public class GoogleDriveTest : MonoBehaviour
 {
-    GoogleDriveFiles.ListRequest request;
-    string result = string.Empty;
-    string idResult = string.Empty;
-    Coroutine _searchCoroutine = null;
+    const string GOOGLE_DRIVE_FOLDER_ID = "1A6fu8iMUg3yF1vM0rJ04KBgT-MefGeF0";
+    string WwiseSFXFilePath => Path.Combine(Application.dataPath, @"..\", Application.productName + "_WwiseProject", "Originals", "SFX");
 
-    public WriterTest writer;
-    public string googleDriveFilePath = string.Empty;
 
-    const string GOOGLE_DRIVE_FOLDER = "1A6fu8iMUg3yF1vM0rJ04KBgT-MefGeF0";
-
-    public void TestDownload() => StartCoroutine(DownloadCoroutine());
-
-    IEnumerator DownloadCoroutine()
+    public void Download(bool isForceDownloaded = false)
     {
-        yield return _searchCoroutine = StartCoroutine(GetFileByPathRoutine(googleDriveFilePath));
-        print(result);
-        GoogleDriveFiles.Download(idResult).Send().OnDone += file => writer.WriteFile(file.Content);
-    }
-
-    public void TestUpload()
-    {
-        var file = new UnityGoogleDrive.Data.File(){ Name = Path.GetFileName(googleDriveFilePath), Content = writer.ReadFile(), Parents = new(){ GOOGLE_DRIVE_FOLDER } };
-        GoogleDriveFiles.Create(file).Send().OnDone += (x) => print("Send request was a success : " + x.Name);
-    }
-
-    public void DisplayAllFiles()
-    {
-        //print("Displaying all files");
-        //GoogleDriveFiles.List().Send().OnDone += fileList => fileList.Files.ForEach(x => print(x.Name));
-
-        writer.ReadFolder();
-    }
-
-    private IEnumerator GetFileByPathRoutine(string filePath)
-    {
-        // A folder in Google Drive is actually a file with the MIME type 'application/vnd.google-apps.folder'.
-        // Hierarchy relationship is implemented via File's 'Parents' property. To get the actual file using it's path
-        // we have to find ID of the file's parent folder, and for this we need IDs of all the folders in the chain.
-        // Thus, we need to traverse the entire hierarchy chain using List requests.
-        // More info about the Google Drive folders: https://developers.google.com/drive/v3/web/folder.
-
-        yield return GoogleDriveFiles.EmptyTrash().Send();
-        var fileName = filePath.Contains("/") ? GetAfter(filePath, "/") : filePath;
-        var parentNames = filePath.Contains("/") ? GetBeforeLast(filePath, "/").Split('/') : null;
-        // Resolving folder IDs one by one to find ID of the file's parent folder.
-        var parentId = "root"; // 'root' is alias ID for the root folder in Google Drive.
-        if (parentNames != null)
+        List<string> localFiles = Directory.GetFiles(WwiseSFXFilePath).ToList();
+        GoogleDriveFiles.ListRequest request = new GoogleDriveFiles.ListRequest() { Q = $"'{GOOGLE_DRIVE_FOLDER_ID}' in parents", Fields = new List<string> { "files(name, id)" } };
+        request.Send().OnDone += driveFileList => 
         {
-            for (int i = 0; i < parentNames.Length; i++)
+            driveFileList.Files.ForEach(driveFile =>
             {
-                request = new GoogleDriveFiles.ListRequest();
-                request.Fields = new List<string> { "files(id)" };
-                request.Q = $"'{parentId}' in parents and name = '{parentNames[i]}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false";
-
-                yield return request.Send();
-
-                if (request.IsError || request.ResponseData.Files == null || request.ResponseData.Files.Count == 0)
+                if (Path.GetExtension(driveFile.Name) != ".wav") return;
+                if (localFiles.FirstOrDefault(localFile => Path.GetFileName(localFile) == driveFile.Name) == default || isForceDownloaded)
                 {
-                    result = $"Failed to retrieve '{parentNames[i]}' part of '{filePath}' file path.";
-                    yield break;
+                    Debug.Log($"Dowloading {driveFile.Name}");
+                    GoogleDriveFiles.Download(driveFile.Id).Send().OnDone += dlFile =>
+                    {
+                        File.WriteAllBytes(Path.Combine(WwiseSFXFilePath, driveFile.Name), dlFile.Content);
+                        Debug.Log($"Download of {driveFile.Name} done, writing the new file in {WwiseSFXFilePath}");
+                    };
                 }
-
-                if (request.ResponseData.Files.Count > 1)
-                    Debug.LogWarning($"Multiple '{parentNames[i]}' folders been found.");
-
-                parentId = request.ResponseData.Files[0].Id;
-            }
-        }
-
-        // Searching the file.
-        request = new GoogleDriveFiles.ListRequest();
-        request.Fields = new List<string> { "files(id, size, modifiedTime)" };
-        request.Q = $"'{parentId}' in parents and name = '{fileName}'";
-
-        yield return request.Send();
-
-        if (request.IsError || request.ResponseData.Files == null || request.ResponseData.Files.Count == 0)
-        {
-            result = $"Failed to retrieve '{filePath}' file.";
-            yield break;
-        }
-
-        if (request.ResponseData.Files.Count > 1)
-        {
-            Debug.LogWarning($"multiple (x{request.ResponseData.Files.Count}) '{filePath}' files been found.");
-
-        }
-
-        var file = request.ResponseData.Files[0];
-
-        result = $"ID: {file.Id}; Size: {file.Size * .001f:0.00}KB;";
-        idResult = file.Id;
+            });  
+        };
+        Debug.Log("Download procedure launched");
     }
 
-    private static string GetBeforeLast(string content, string matchString)
+    public void ForceDownload() => Download(true);
+
+
+    public void Upload(bool isForceUploaded = false)
     {
-        if (content.Contains(matchString))
+        List<string> localFiles = Directory.GetFiles(WwiseSFXFilePath).ToList();
+        GoogleDriveFiles.ListRequest request = new GoogleDriveFiles.ListRequest() { Q = $"'{GOOGLE_DRIVE_FOLDER_ID}' in parents and trashed=false", Fields = new List<string> { "files(name, id)" } };
+        request.Send().OnDone += driveFileList =>
         {
-            var endIndex = content.LastIndexOf(matchString, StringComparison.Ordinal);
-            return content.Substring(0, endIndex);
-        }
-        return null;
+            localFiles.ForEach(localFile =>
+            {
+                if (Path.GetExtension(localFile) != ".wav") return;
+                string driveFileId = driveFileList.Files.FirstOrDefault(x => Path.GetFileName(localFile) == x.Name)?.Id;
+                Debug.Log(driveFileId);
+                if (driveFileId == default || isForceUploaded)
+                {
+                    Debug.Log($"The file {Path.GetFileName(localFile)} is going to be updated on the drive");
+                    if (driveFileId != default)
+                    {
+                        Debug.Log($"Need to delete a file in the Drive");
+                        GoogleDriveFiles.DeleteRequest deleteRequest = new(driveFileId);
+                        deleteRequest.Send().OnDone += str =>
+                        {
+                            var file = new UnityGoogleDrive.Data.File() { 
+                                Name = Path.GetFileName(localFile), 
+                                Content = File.ReadAllBytes(Path.Combine(WwiseSFXFilePath, Path.GetFileName(localFile))), 
+                                Parents = new() { GOOGLE_DRIVE_FOLDER_ID } 
+                            };
+                            GoogleDriveFiles.Create(file).Send().OnDone += createdFile =>
+                            {
+                                Debug.Log($"Upload of {createdFile.Name} done");
+                            };
+                        };
+                    }
+                    else
+                    {
+                        Debug.Log($"The file {Path.GetFileName(localFile)} is going to be updated on the drive");
+                        var file = new UnityGoogleDrive.Data.File()
+                        {
+                            Name = Path.GetFileName(localFile),
+                            Content = File.ReadAllBytes(Path.Combine(WwiseSFXFilePath, Path.GetFileName(localFile))),
+                            Parents = new() { GOOGLE_DRIVE_FOLDER_ID }
+                        };
+                        GoogleDriveFiles.Create(file).Send().OnDone += createdFile =>
+                        {
+                            Debug.Log($"Upload of {createdFile.Name} done");
+                        };
+                    }
+                }
+            });
+        };
+        Debug.Log("Upload procedure Launched");
     }
 
-    private static string GetAfter(string content, string matchString)
-    {
-        if (content.Contains(matchString))
-        {
-            var startIndex = content.LastIndexOf(matchString, StringComparison.Ordinal) + matchString.Length;
-            if (content.Length <= startIndex) return string.Empty;
-            return content.Substring(startIndex);
-        }
-        return null;
-    }
+    public void ForceUpload() => Upload(true);
 }
