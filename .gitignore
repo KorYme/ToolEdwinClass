@@ -67,6 +67,7 @@ crashlytics-build.properties
 *.validationcache
 *.wem
 .backup
+*.wav
 
 ## ---------------- ##
 ##   WWise stuff    ##
@@ -111,9 +112,9 @@ WwiseUnityIntegration_*_Src.zip
 # Assets/Plugins/Editor/Jetbrains.meta
 # Assets/Plugins/Editor/Jetbrains/
 # .idea
-EdwinToolClass/EdwinToolClass_WwiseProject/GeneratedSoundBanks/Windows/
+EdwinToolClass/EdwinToolClass_WwiseProject/GeneratedSoundBanks/
 
-EdwinToolClass/EdwinToolClass_WwiseProject/Originals/SFX/
+#EdwinToolClass/EdwinToolClass_WwiseProject/Originals/SFX/ TEST
 
 EdwinToolClass/Assets/Wwise/Editor/ProjectData/AkWwiseProjectData.asset
 EdwinToolClass/Assets/Wwise/API/Runtime/Plugins/Mac/

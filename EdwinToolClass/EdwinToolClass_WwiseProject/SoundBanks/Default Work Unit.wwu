@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{03015784-78E8-49A6-BC21-B5144BE49390}" SchemaVersion="110">
 	<SoundBanks>
-		<WorkUnit Name="Default Work Unit" ID="{03015784-78E8-49A6-BC21-B5144BE49390}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{03015784-78E8-49A6-BC21-B5144BE49390}" PersistMode="Standalone">
+			<ChildrenList>
+				<SoundBank Name="TestBank" ID="{2358923C-070F-492E-89C6-E50E4DBDF34E}">
+					<ObjectInclusionList>
+						<ObjectRef Name="60 BPM Metronome2" ID="{DA2B606F-3371-4674-B9BD-A7292B48FB3E}" WorkUnitID="{6DA88E92-B22A-4EE3-BAF3-1FAE865581FD}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="PlayMusic" ID="{DBD4540A-889F-493E-9802-DB775B3822A9}" WorkUnitID="{E65DFF2C-02A8-467A-833A-661C775BE275}" Origin="Manual" Filter="7"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+			</ChildrenList>
+		</WorkUnit>
 	</SoundBanks>
 </WwiseDocument>
