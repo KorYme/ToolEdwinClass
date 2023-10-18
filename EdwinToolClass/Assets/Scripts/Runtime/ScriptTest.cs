@@ -5,7 +5,5 @@ using UnityEngine;
 public class ScriptTest : MonoBehaviour
 {
     [SerializeField] SpriteRenderer _spriteRenderer;
-    public GoogleDriveTest GoogleDriveScript;
-
     public string text = "";
 }

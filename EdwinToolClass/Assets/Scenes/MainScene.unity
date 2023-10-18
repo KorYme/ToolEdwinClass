@@ -481,8 +481,6 @@ GameObject:
   - component: {fileID: 1335634735}
   - component: {fileID: 1335634734}
   - component: {fileID: 1335634736}
-  - component: {fileID: 1335634737}
-  - component: {fileID: 1335634738}
   m_Layer: 0
   m_Name: Test
   m_TagString: Untagged
@@ -503,8 +501,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spriteRenderer: {fileID: 0}
-  GoogleDriveScript: {fileID: 1335634737}
-  text: Let's Gay
+  text: Let's Go
 --- !u!4 &1335634735
 Transform:
   m_ObjectHideFlags: 0
@@ -572,32 +569,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1335634737
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1335634733}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97eee07982a9a774f85605eddf8ceb64, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  writer: {fileID: 1335634738}
-  googleDriveFilePath: Couch Game Project/Wwise data/MainSoundBank.bnk
---- !u!114 &1335634738
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1335634733}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dbf913fc1798e2498a0e81c68db6c13, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -5,6 +5,7 @@
 			<ChildrenList>
 				<SoundBank Name="TestBank" ID="{2358923C-070F-492E-89C6-E50E4DBDF34E}">
 					<ObjectInclusionList>
+						<ObjectRef Name="Sword SFX 4" ID="{2E9BC584-61C3-443D-96D7-31AD1AE2D881}" WorkUnitID="{C3695978-5A54-441F-B3A1-FB1D095131CF}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="60 BPM Metronome2" ID="{DA2B606F-3371-4674-B9BD-A7292B48FB3E}" WorkUnitID="{6DA88E92-B22A-4EE3-BAF3-1FAE865581FD}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="PlayMusic" ID="{DBD4540A-889F-493E-9802-DB775B3822A9}" WorkUnitID="{E65DFF2C-02A8-467A-833A-661C775BE275}" Origin="Manual" Filter="7"/>
 					</ObjectInclusionList>
